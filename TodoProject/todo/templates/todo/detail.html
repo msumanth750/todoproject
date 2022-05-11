@@ -1,0 +1,27 @@
+{%extends 'todo/base.html'%}
+
+{%block title %}Todo-Detail{%endblock%}
+{%block content%}
+<div class="row mt-5">
+  <div class="col-lg-2">
+
+  </div>
+  <div class="col-lg-9">
+    <div class="card">
+      <div class="card-header">
+        {{todo.Status|title}} | {{todo.Datetime}} | {{todo.CreatedAt}} | {{todo.ModifiedAt}}
+      </div>
+      <div class="card-body">
+        <h5 class="card-title"> {{todo.Title}} </h5>
+        <p class="card-text">{{todo.Description}}</p>
+
+        <a class="btn btn-sm btn-primary" href="{%url 'todo-update' todo.id%}">Edit</a>
+        <a class="btn btn-sm btn-warning" href="{%url 'todo-list' %}">Back</a>
+        <a class="btn btn-sm btn-danger" href="{%url 'todo-delete' todo.id %}">Delete</a>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{%endblock%}

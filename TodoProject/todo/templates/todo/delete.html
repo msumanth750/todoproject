@@ -1,0 +1,21 @@
+{%extends 'todo/base.html'%}
+
+{%block title %}Todo-Delete{%endblock%}
+{%block content%}
+<div class="row mt-5">
+  <div class="col-lg-4">
+
+  </div>
+  <div class="col-lg-8">
+    <div class="jumbotron">
+      <form method="post">
+        {%csrf_token%}
+        <h2>Do yo want to delete the object {{todo}}</h2>
+        <button class="btn btn-sm btn-danger" type="submit" name="button">Yes</button>
+        <a class="btn btn-sm btn-primary" href="{%url 'todo-detail' todo.id%}">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+
+{%endblock%}
