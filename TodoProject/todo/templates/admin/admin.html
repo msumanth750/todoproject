@@ -1,7 +1,53 @@
 {%extends 'todo/base.html'%}
 
+{% load i18n static %}
+
 {%block title %}Todo-List{%endblock%}
 {%block content%}
+<style media="screen">
+  .viewlink,
+  .inlineviewlink {
+    padding-left: 16px;
+    color: black;
+  }
+
+  .addlink {
+    padding-left: 16px;
+    color: green;
+  }
+
+  .changelink,
+  .inlinechangelink {
+    padding-left: 16px;
+    color: blue;
+  }
+
+  .deletelink {
+    padding-left: 16px;
+    color: red;
+  }
+
+  a.deletelink:link,
+  a.deletelink:visited {
+    color: #CC3434;
+  }
+
+  a.deletelink:focus,
+  a.deletelink:hover {
+    color: #993333;
+    text-decoration: none;
+  }
+
+  .module ul.actionlist {
+    margin-left: 0;
+  }
+
+  ul.actionlist li {
+    list-style-type: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+</style>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <a class="navbar-brand" href="">Django Admin Interface</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,39 +79,7 @@
   </div>
 </nav>
 <div class="row mt-5 ml-1">
-  <div class="col-lg-1">
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#todoModal">
-      Add Todo
-    </button>
-    <form method="post">
-      <div class="modal fade" id="todoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Todo Entry</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-
-              {%csrf_token%}
-              {{form.as_p}}
-
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="submit" class="btn btn-primary">Add Todo</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </form>
-
-
-
-  </div>
-  <div class="col-lg-11">
+  <div class="col-lg-9">
     <div class="card">
       <div class="card-body">
         <table class="table table-sm ">
@@ -94,7 +108,63 @@
     </div>
 
   </div>
+  <div class="col-lg-3">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#todoModal">
+      Add Todo
+    </button>
+    <form method="post">
+      <div class="modal fade" id="todoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Todo Entry</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
 
+              {%csrf_token%}
+              {{form.as_p}}
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Add Todo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    <div class="card mt-1" style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title">Recent Deleted Actions</h5>
+        <h6 class="card-subtitle mb-2 text-muted">Last 10</h6>
+
+        {% load log %}
+        {% get_admin_log 10 as admin_log for_user user %}
+        {% if not admin_log %}
+        <p>{% translate 'None available' %}</p>
+        {% else %}
+        <ul>
+          {% for entry in admin_log %}
+          <li class="card-text {% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
+            {% if entry.is_deletion or not entry.get_admin_url %}
+            {{ entry.object_repr }}
+            {% else %}
+            <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+            {% endif %}
+            {% if entry.content_type %}
+            <span class="mini quiet">{% filter capfirst %}{{ entry.content_type.name }}{% endfilter %}</span>
+            {% else %}
+            <span class="mini quiet">{% translate 'Unknown content' %}</span>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 </div>
-
 {%endblock%}
